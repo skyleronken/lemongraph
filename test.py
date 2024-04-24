@@ -530,13 +530,10 @@ class TestSerializers(unittest.TestCase):
 
 class TestDL(unittest.TestCase):
     def test_dirlist(self):
-        dots = 0
-        for x in dirlist('/'):
-            if x == '.':
-                dots += 1
-            elif x == '..':
-                dots += 2
-        self.assertEqual(dots, 3)
+        a = os.listdir('/')
+        # omit '.' and '..' to mimic os.listdir
+        b = list(x for x in dirlist('/') if x not in '..')
+        self.assertEqual(a, b)
 
 
 class TestQL(unittest.TestCase):
@@ -824,7 +821,7 @@ class Test_Endpoints(LocalServer):
             'state': 'done',
             'update': {
                 'state': 'delete',
-             }
+            }
         })
         self.assertEqual(code, 200)
 
