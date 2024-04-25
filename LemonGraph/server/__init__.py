@@ -8,7 +8,6 @@ from lazy import lazy
 import logging
 import msgpack
 import os
-import pkg_resources
 import re
 from six import iteritems, itervalues, string_types
 from six.moves.urllib_parse import parse_qs
@@ -17,6 +16,13 @@ import sys
 import tempfile
 import time
 import traceback
+
+try:
+    import importlib.resources
+    def pkg_read_binary(pkg, resource):
+        return importlib.resources.files(pkg).joinpath(resource).read_bytes()
+except ImportError:
+    from pkg_resources import resource_string as pkg_read_binary
 
 from .. import Serializer, Node, Edge, Transaction, QuerySyntaxError, merge_values
 from ..collection import Collection, uuid_to_utc, uuid_to_utc_ts
@@ -1045,21 +1051,21 @@ class KV_UUID_Key(Handler):
             raise HTTPError(404, 'key not found')
 
 class Static(Handler):
-    res = re.compile(r'^[^/]+\.(js|css|html)')
     mime = {
         '.html': 'text/html',
-        '.css': 'text/css',
-        '.js': 'text/javascript',
-        '.png': 'image/png',
+        '.css':  'text/css',
+        '.js':   'text/javascript',
+        '.png':  'image/png',
     }
-    path = ('static', res)
+    rx = re.compile(r'^[^/]+\.(' + '|'.join(e[1:] for e in mime) + ')')
+    path = ('static', rx)
     cache = {}
 
     def get(self, _, resource):
         try:
             body = self.cache[resource]
         except KeyError:
-            body = pkg_resources.resource_string(__name__, '../data/%s' % resource)
+            body = pkg_read_binary('LemonGraph.data', resource)
             if static_cache:
                 self.cache[resource] = body
 

@@ -650,6 +650,10 @@ class Test_Depth(LocalServer):
         self.assertEqual(data['nodes'][2]['depth'], 3)
 
 class Test_Endpoints(LocalServer):
+    def test_static(self):
+        code, headers, data = self.client.get('/static/lemon.png')
+        self.assertEqual(code, 200)
+
     def test_lg_lite(self):
         # fancy adapter decorator
         def adapter(**params):
