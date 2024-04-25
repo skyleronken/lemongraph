@@ -11,7 +11,7 @@ from setuptools.command.install import install
 from setuptools.command.sdist import sdist
 
 with open(os.path.join(os.path.split(__file__)[0], 'LemonGraph', 'version.py')) as vf:
-	exec(vf.read(), locals())
+    exec(vf.read(), locals())
 
 def fetch_external():
     try:
@@ -34,14 +34,9 @@ def wrap(**classes):
     return classes
 #    return dict((cls.__module__.split('.')[-1], Wrap(cls)) for cls in classes)
 
-cffi = ['cffi>=1.8.2,<1.16']
-reqs = cffi + [
-    'lazy>=1.0,<1.5',
-    'msgpack>=0.6,<1.1',
-    'python-dateutil>=1.4,<2.9',
-    'setuptools',
-    'six',
-]
+with open('requirements.txt') as rh:
+    reqs = [line.strip() for line in rh]
+cffi, = [r for r in reqs if r.startswith('cffi')]
 
 if platform.python_implementation() == 'CPython':
     reqs.append('ujson')

@@ -1,5 +1,5 @@
-cffi>=1.8.2,<1.16
-lazy>=1.0,<1.5
+cffi>=1.8.2,<1.17
+lazy>=1.0,<1.7
 msgpack>=0.6,<1.1
 python-dateutil>=1.4,<2.9
 setuptools
