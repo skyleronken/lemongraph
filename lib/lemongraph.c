@@ -16,12 +16,13 @@
 #include<stdlib.h>
 #include<string.h>
 #include<sys/stat.h>
-#include<zlib.h>
+#include<unistd.h>
 
 #include<lemongraph.h>
 
 #include"static_assert.h"
 #include"counter.h"
+#include"crc32.h"
 
 typedef uint64_t txnID_t;
 

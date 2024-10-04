@@ -292,9 +292,8 @@ void lg_log_msg(int level, char *fmt, ...);
 '''
 
 C_KEYWORDS = dict(
-    sources=['deps/lmdb/libraries/liblmdb/mdb.c', 'deps/lmdb/libraries/liblmdb/midl.c', 'lib/lemongraph.c', 'lib/db.c', 'lib/counter.c', 'lib/afsync.c', 'lib/avl.c', 'lib/list.c', 'lib/xfd.c', 'lib/server.c', 'lib/logging.c'],
+    sources=['deps/lmdb/libraries/liblmdb/mdb.c', 'deps/lmdb/libraries/liblmdb/midl.c', 'lib/lemongraph.c', 'lib/db.c', 'lib/counter.c', 'lib/afsync.c', 'lib/avl.c', 'lib/list.c', 'lib/xfd.c', 'lib/server.c', 'lib/logging.c', 'lib/crc32.c'],
     include_dirs=['lib','deps/lmdb/libraries/liblmdb'],
-    libraries=['z'],
 )
 
 ffi = cffi.FFI()

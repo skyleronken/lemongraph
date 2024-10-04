@@ -69,10 +69,10 @@ Note that the REST service cannot run on CentOS 6's Python 2.6, as we rely on th
 Python 3 should work now though - replace `python`/`pypy`/`pip` and package names with appropriate Python 3 variants.
 
 * CPython on CentOS 6/7:
-	* `yum install -y gcc gcc-c++ make libffi-devel zlib-devel python-devel python-setuptools`
+	* `yum install -y gcc gcc-c++ make libffi-devel python-devel python-setuptools`
 	* `pip install 'cffi>=1.0'`
 * CPython on Ubuntu 15.04 - 20.04:
-	* `apt-get install gcc libffi-dev zlib1g-dev python-dev python-cffi`
+	* `apt-get install gcc libffi-dev python-dev python-cffi`
 * CPython (compiled) - just bootstrap setuptools and install cffi:
 	* `python -mensurepip`
 	* `pip install 'cffi>=1.0'`

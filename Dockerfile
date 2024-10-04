@@ -33,9 +33,9 @@ RUN ! type yum     2>/dev/null || (yum install -y ${YUM_RUNTIME} && yum clean al
 FROM runtime AS build
 
 # use package manager to pull in build dependencies
-ARG APK_BUILD="bash curl gcc git libffi-dev make musl-dev python3-dev py3-pip zlib-dev"
-ARG APT_BUILD="bash curl gcc git libffi-dev make python3-dev python3-pip unzip zlib1g-dev"
-ARG YUM_BUILD="bash curl gcc git libffi-devel make python3-devel python3-pip unzip zlib-devel"
+ARG APK_BUILD="bash curl gcc git libffi-dev make musl-dev python3-dev py3-pip"
+ARG APT_BUILD="bash curl gcc git libffi-dev make python3-dev python3-pip unzip"
+ARG YUM_BUILD="bash curl gcc git libffi-devel make python3-devel python3-pip unzip"
 RUN ! type apk     2>/dev/null || apk add ${APK_BUILD}
 RUN ! type apt-get 2>/dev/null || (apt-get update && apt-get install -y -q ${APT_BUILD})
 RUN ! type yum     2>/dev/null || yum install -y ${YUM_BUILD}
