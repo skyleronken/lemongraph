@@ -1,8 +1,8 @@
 # default base image - should also work for:
 #	debian:12-slim
-#	ubuntu:jammy
-#	fedora:39
-ARG IMAGE=alpine:3.19
+#	ubuntu:noble
+#	fedora:40
+ARG IMAGE=alpine:3.20
 
 # build the base runtime image
 FROM ${IMAGE} AS runtime
@@ -51,7 +51,7 @@ RUN CPPFLAGS=-DHAVE_FDATASYNC=1 python3 setup.py bdist
 
 # stage LG into /install
 WORKDIR /install
-RUN tar xvf /build/dist/LemonGraph-*
+RUN tar xvf /build/dist/*.tar.gz
 
 # overlay build stage's /install onto runtime
 FROM runtime AS install
