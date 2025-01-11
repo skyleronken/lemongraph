@@ -89,28 +89,11 @@ jobs:
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
 
-  manifest:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request'
-    
-    steps:
-      - name: Log into registry
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create and push manifest
+      - name: Create manifest
+        if: ${{ matrix.arch == 'amd64' && github.event_name != 'pull_request' }}
         run: |
-          # Pull the images first
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:amd64-latest
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64-latest
-          
-          # Create and push the manifest
           docker manifest create ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
-            --amend $(docker inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:amd64-latest --format='{{index .RepoDigests 0}}') \
-            --amend $(docker inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64-latest --format='{{index .RepoDigests 0}}')
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:amd64-latest \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64-latest
 
           docker manifest push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
