@@ -95,37 +95,22 @@ jobs:
     if: github.event_name != 'pull_request'
     
     steps:
-      - name: Log into registry ${{ env.REGISTRY }}
+      - name: Log into registry
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226
+
       - name: Create and push manifest
-        env:
-          DOCKER_CLI_EXPERIMENTAL: enabled
-          DOCKER_BUILDKIT: 1
-        run: |
-          # For each tag format, create a manifest list
-          for tag in latest ${GITHUB_REF#refs/tags/}; do
-            if [ "$tag" != "" ]; then
-              # Pull the images first
-              docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:amd64-${tag}@$(docker manifest inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:amd64-${tag} | jq -r '.manifests[0].digest')
-              docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64-${tag}@$(docker manifest inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64-${tag} | jq -r '.manifests[0].digest')
-              
-              # Create manifest with specific digests
-              docker manifest create ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${tag} \
-                ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:amd64-${tag}@$(docker manifest inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:amd64-${tag} | jq -r '.manifests[0].digest') \
-                ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64-${tag}@$(docker manifest inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64-${tag} | jq -r '.manifests[0].digest')
-              
-              # Annotate the manifest with architecture specific information
-              docker manifest annotate ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${tag} \
-                ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:amd64-${tag} --arch amd64 --os linux
-              docker manifest annotate ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${tag} \
-                ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64-${tag} --arch arm64 --os linux
-              
-              # Push the manifest
-              docker manifest push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${tag}
-            fi
-          done
+        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09
+        with:
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          platforms: linux/amd64,linux/arm64
+          inputs: |
+            amd64=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:amd64-latest
+            arm64=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64-latest
