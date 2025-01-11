@@ -104,6 +104,11 @@ jobs:
 
       - name: Create and push manifest
         run: |
+          # Pull the images first
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:amd64-latest
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64-latest
+          
+          # Create and push the manifest
           docker manifest create ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
             --amend $(docker inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:amd64-latest --format='{{index .RepoDigests 0}}') \
             --amend $(docker inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64-latest --format='{{index .RepoDigests 0}}')
