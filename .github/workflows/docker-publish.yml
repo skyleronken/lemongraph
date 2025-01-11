@@ -95,9 +95,6 @@ jobs:
     if: github.event_name != 'pull_request'
     
     steps:
-      - name: Install crane
-        uses: imjasonh/setup-crane@v0.3
-
       - name: Log into registry
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d
         with:
@@ -107,7 +104,8 @@ jobs:
 
       - name: Create and push manifest
         run: |
-          # Create the manifest list
-          crane append ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:amd64-latest \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64-latest
+          docker manifest create ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
+            --amend $(docker inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:amd64-latest --format='{{index .RepoDigests 0}}') \
+            --amend $(docker inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64-latest --format='{{index .RepoDigests 0}}')
+
+          docker manifest push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
